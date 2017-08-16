@@ -85,26 +85,26 @@ func main() {
 	scanner := bufio.NewScanner(fp)
 
 	for scanner.Scan() {
-		jsonUrl := scanner.Text()
-		fmt.Println(jsonUrl)
+		jsonURL := scanner.Text()
+		fmt.Println(jsonURL)
 
-		radikoData := getRadikoData(jsonUrl)
-		doneFilename := fmt.Sprintf("%s.txt", radikoData.Program_name)
-		_, err := os.Stat(radikoData.Program_name)
+		radikoData := getRadikoData(jsonURL)
+		doneFilename := fmt.Sprintf("%s.txt", radikoData.ProgramName)
+		_, err := os.Stat(radikoData.ProgramName)
 		if err != nil {
-			if err := os.Mkdir(radikoData.Program_name, 0777); err != nil {
+			if err := os.Mkdir(radikoData.ProgramName, 0777); err != nil {
 				log.Fatal(err)
 			}
 		}
 
-		for _, radikoDetail := range radikoData.Detail_list {
-			for i, f := range radikoDetail.File_list {
-				title := utf8string.NewString(f.File_title)
+		for _, radikoDetail := range radikoData.DetailList {
+			for i, f := range radikoDetail.FileList {
+				title := utf8string.NewString(f.FileTitle)
 				fileName := title.Slice(1, title.RuneCount()-1)
 
 				re := regexp.MustCompile(`(\(\d\))$`)
 				titleName := re.ReplaceAllString(fileName, "")
-				saveDir := radikoData.Program_name + "/" + titleName
+				saveDir := radikoData.ProgramName + "/" + titleName
 				if i == 0 {
 					_, err := os.Stat(saveDir)
 					if err != nil {
@@ -119,7 +119,7 @@ func main() {
 					fmt.Println("already downloaded")
 					continue
 				}
-				m3u8FilePath := f.File_name
+				m3u8FilePath := f.FileName
 				masterM3u8Path := getM3u8MasterPlaylist(m3u8FilePath)
 
 				err := convertM3u8ToMp3(masterM3u8Path, saveDir+"/"+fileName)
@@ -188,18 +188,18 @@ func getM3u8MasterPlaylist(m3u8FilePath string) string {
 	}
 
 	if t != m3u8.MASTER {
-		log.Fatal("not support file type [%d]", t)
+		log.Fatalf("not support file type [%s]", t)
 	}
 
 	return p.(*m3u8.MasterPlaylist).Variants[0].URI
 }
 
-func getRadikoData(jsonUrl string) RadikoData {
-	res, _ := http.Get(jsonUrl)
+func getRadikoData(jsonURL string) radikoData {
+	res, _ := http.Get(jsonURL)
 	defer res.Body.Close()
 	byteArr, _ := ioutil.ReadAll(res.Body)
 
-	var jsonData MainData
+	var jsonData root
 	err := json.Unmarshal(byteArr, &jsonData)
 	if err != nil {
 		log.Fatal(err)
@@ -207,23 +207,23 @@ func getRadikoData(jsonUrl string) RadikoData {
 	return jsonData.Main
 }
 
-type MainData struct {
-	Main RadikoData
+type root struct {
+	Main radikoData
 }
 
-type RadikoData struct {
-	Site_id      string
-	Program_name string
-	Detail_list  []DetailList
+type radikoData struct {
+	SiteID      string       `json:"site_id"`
+	ProgramName string       `json:"program_name"`
+	DetailList  []detailList `json:"detail_list"`
 }
 
-type DetailList struct {
-	File_list []FileList
+type detailList struct {
+	FileList []fileList `json:"file_list"`
 }
 
-type FileList struct {
-	Seq        int
-	File_id    string
-	File_title string
-	File_name  string
+type fileList struct {
+	Seq       int    `json:"seq"`
+	FileID    string `json:"file_id"`
+	FileTitle string `json:"file_title"`
+	FileName  string `json:"file_name"`
 }
