@@ -188,14 +188,17 @@ func getM3u8MasterPlaylist(m3u8FilePath string) string {
 	}
 
 	if t != m3u8.MASTER {
-		log.Fatalf("not support file type [%s]", t)
+		log.Fatalf("not support file type [%v]", t)
 	}
 
 	return p.(*m3u8.MasterPlaylist).Variants[0].URI
 }
 
 func getRadikoData(jsonURL string) radikoData {
-	res, _ := http.Get(jsonURL)
+	res, err := http.Get(jsonURL)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer res.Body.Close()
 	byteArr, _ := ioutil.ReadAll(res.Body)
 
