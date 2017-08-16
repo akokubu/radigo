@@ -20,14 +20,14 @@ https://www.nhk.or.jp/radioondemand/json/0164/bangumi_0164_01.json
 ./radigo -i index.txt
 ```
 
-program_name/file_title/file_title(n) のようにディレクトリ作ってMP3形式で保村します。
-例)
-新日曜名作座/料理人季蔵捕物控/料理人季蔵捕物控(1).mp3
-新日曜名作座/料理人季蔵捕物控/料理人季蔵捕物控(2).mp3
-新日曜名作座/料理人季蔵捕物控/料理人季蔵捕物控(3).mp3
+program_name/file_title/file_title(n) のようにディレクトリ作ってMP3形式で保存します。<br/>
+例)<br/>
+新日曜名作座/料理人季蔵捕物控/料理人季蔵捕物控(1).mp3<br/>
+新日曜名作座/料理人季蔵捕物控/料理人季蔵捕物控(2).mp3<br/>
+新日曜名作座/料理人季蔵捕物控/料理人季蔵捕物控(3).mp3<br/>
 
-ダウンロード済みはprogram_name.txt というファイルを作成して、file_title(n) を書き込むことで管理します。
-例)
+ダウンロード済みはprogram_name.txt というファイルを作成して、file_title(n) を書き込むことで管理します。<br/>
+例)<br/>
 新日曜名作座.txt
 
 ```
@@ -60,4 +60,5 @@ go get github.com/akokubu/radigo
 * lint
 * CI
 * テストカバレッジ
+* go fmtを自動で
 
