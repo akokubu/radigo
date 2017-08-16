@@ -57,7 +57,8 @@ go get github.com/akokubu/radigo
 * indexから削除サブコマンド
 * indexの内容表示サブコマンド
 * ダウンロード済み履歴管理
-* lint
 * CI
 * テストカバレッジ
+* ダウンロード進捗表示
+* MP3変換進捗
 
