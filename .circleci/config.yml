@@ -1,0 +1,17 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.8
+        environment:
+          REVIEWDOG_GITHUB_API_TOKEN=$REVIEWDOG_GITHUB_API_TOKEN
+    steps:
+      - checkout
+      - run: echo "hello world"
+      - run: curl -fSL https://github.com/haya14busa/reviewdog/releases/download/0.9.8/reviewdog_linux_amd64 -o reviewdog && chmod +x ./reviewdog
+      - run: go get -u github.com/golang/lint/golint
+      - run: go get -u github.com/kisielk/errcheck
+      - run: go get -u honnef.co/go/tools/cmd/unused
+      - run: go get -u honnef.co/go/tools/cmd/gosimple
+      - run: go get -u honnef.co/go/tools/cmd/staticcheck
+      - run: ./reviewdog -ci="circle-ci" -conf=./reviewdog.yml

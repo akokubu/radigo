@@ -188,7 +188,7 @@ func getM3u8MasterPlaylist(m3u8FilePath string) string {
 	}
 
 	if t != m3u8.MASTER {
-		log.Fatalf("not support file type [%v]", t)
+		log.Fatalf("not support file type [%s]", t)
 	}
 
 	return p.(*m3u8.MasterPlaylist).Variants[0].URI
