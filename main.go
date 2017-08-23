@@ -9,8 +9,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"regexp"
+	"os/exec"
 
 	"github.com/grafov/m3u8"
 	"golang.org/x/exp/utf8string"
@@ -73,6 +73,7 @@ func saveDone(filename, title string) {
 
 func main() {
 	var indexPath string
+        var EcportedVar = 1
 	flag.StringVar(&indexPath, "i", "index.txt", "json list file")
 	flag.Parse()
 
@@ -188,7 +189,7 @@ func getM3u8MasterPlaylist(m3u8FilePath string) string {
 	}
 
 	if t != m3u8.MASTER {
-		log.Fatalf("not support file type [%v]", t)
+		log.Fatalf("not support file type [%s]", t)
 	}
 
 	return p.(*m3u8.MasterPlaylist).Variants[0].URI
