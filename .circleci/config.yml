@@ -3,6 +3,8 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.8
+        environment:
+          REVIEWDOG_GITHUB_API_TOKEN=$REVIEWDOG_GITHUB_API_TOKEN
     steps:
       - checkout
       - run: echo "hello world"
