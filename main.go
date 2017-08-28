@@ -73,7 +73,6 @@ func saveDone(filename, title string) {
 
 func main() {
 	var indexPath string
-        var EcportedVar = 1
 	flag.StringVar(&indexPath, "i", "index.txt", "json list file")
 	flag.Parse()
 
