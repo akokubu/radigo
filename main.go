@@ -73,6 +73,7 @@ func saveDone(filename, title string) {
 
 func main() {
 	var indexPath string
+	var indexPath2 string
 	flag.StringVar(&indexPath, "i", "index.txt", "json list file")
 	flag.Parse()
 
@@ -203,7 +204,7 @@ func getRadikoData(jsonURL string) radikoData {
 	byteArr, _ := ioutil.ReadAll(res.Body)
 
 	var jsonData root
-	err := json.Unmarshal(byteArr, &jsonData)
+	err = json.Unmarshal(byteArr, &jsonData)
 	if err != nil {
 		log.Fatal(err)
 	}
