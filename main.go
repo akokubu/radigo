@@ -16,61 +16,6 @@ import (
 	"golang.org/x/exp/utf8string"
 )
 
-type ffmpeg struct {
-	*exec.Cmd
-}
-
-func newFFMPEG(inputFilePath string) (*ffmpeg, error) {
-	cmdPath, err := exec.LookPath("ffmpeg")
-	if err != nil {
-		return nil, err
-	}
-
-	return &ffmpeg{exec.Command(cmdPath, "-i", inputFilePath)}, nil
-}
-
-func (f *ffmpeg) setArgs(args ...string) {
-	f.Args = append(f.Args, args...)
-}
-
-func (f *ffmpeg) execute(output string) ([]byte, error) {
-	fmt.Println("ffmpeg")
-	f.Args = append(f.Args, output)
-	fmt.Println(f.Args)
-	return f.CombinedOutput()
-}
-
-func isDone(filename, title string) bool {
-	// ファイルオープン
-	fp, err := os.Open(filename)
-	if err != nil {
-		return false
-	}
-	defer fp.Close()
-
-	scanner := bufio.NewScanner(fp)
-
-	for scanner.Scan() {
-		if scanner.Text() == title {
-			return true
-		}
-	}
-	return false
-}
-
-func saveDone(filename, title string) {
-	// ファイルオープン
-	fp, err := os.OpenFile(filename, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fp.Close()
-
-	writer := bufio.NewWriter(fp)
-	writer.WriteString(title + "\n")
-	writer.Flush()
-}
-
 func main() {
 	var indexPath string
 	flag.StringVar(&indexPath, "i", "index.txt", "json list file")
@@ -188,7 +133,7 @@ func getM3u8MasterPlaylist(m3u8FilePath string) string {
 	}
 
 	if t != m3u8.MASTER {
-		log.Fatalf("not support file type [%v]", t)
+		log.Fatalf("not support file type [%s]", t)
 	}
 
 	return p.(*m3u8.MasterPlaylist).Variants[0].URI
