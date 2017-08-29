@@ -9,8 +9,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"regexp"
+	"os/exec"
 
 	"github.com/grafov/m3u8"
 	"golang.org/x/exp/utf8string"
@@ -203,7 +203,7 @@ func getRadikoData(jsonURL string) radikoData {
 	byteArr, _ := ioutil.ReadAll(res.Body)
 
 	var jsonData root
-	err := json.Unmarshal(byteArr, &jsonData)
+	err = json.Unmarshal(byteArr, &jsonData)
 	if err != nil {
 		log.Fatal(err)
 	}
