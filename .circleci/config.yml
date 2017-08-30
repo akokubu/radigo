@@ -14,5 +14,4 @@ jobs:
       - run: go get -u honnef.co/go/tools/cmd/unused
       - run: go get -u honnef.co/go/tools/cmd/gosimple
       - run: go get -u honnef.co/go/tools/cmd/staticcheck
-      - run: ./reviewdog -ci="circle-ci" -conf=./reviewdog.yml --diff="git diff develop"
-
+      - run: ./reviewdog -ci="circle-ci" -conf=./reviewdog.yml
