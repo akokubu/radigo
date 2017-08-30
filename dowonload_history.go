@@ -1,9 +1,9 @@
 package main
 
 import (
-	"os"
 	"bufio"
 	"log"
+	"os"
 )
 
 func isDone(filename, title string) bool {
@@ -36,4 +36,3 @@ func saveDone(filename, title string) {
 	writer.WriteString(title + "\n")
 	writer.Flush()
 }
-

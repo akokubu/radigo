@@ -2,17 +2,12 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"regexp"
-	"os/exec"
 
-	"github.com/grafov/m3u8"
 	"golang.org/x/exp/utf8string"
 )
 
@@ -76,102 +71,4 @@ func main() {
 			}
 		}
 	}
-}
-
-func convertM3u8ToMp3(masterM3u8Path, title string) error {
-	f, err := newFFMPEG(masterM3u8Path)
-	if err != nil {
-		return err
-	}
-
-	f.setArgs(
-		"-protocol_whitelist", "file,crypto,http,https,tcp,tls",
-		"-movflags", "faststart",
-		"-c", "copy",
-		"-y",
-		"-bsf:a", "aac_adtstoasc",
-	)
-
-	result, err := f.execute("output.mp4")
-	log.Println(string(result))
-	if err != nil {
-		return err
-	}
-
-	f, err = newFFMPEG("output.mp4")
-	if err != nil {
-		return err
-	}
-
-	f.setArgs(
-		"-y",
-		"-acodec", "libmp3lame",
-		"-ab", "256k",
-	)
-
-	var name = title + ".mp3"
-	fmt.Println(name)
-
-	result, err = f.execute(name)
-	log.Println(string(result))
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func getM3u8MasterPlaylist(m3u8FilePath string) string {
-	resp, err := http.Get(m3u8FilePath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	f := resp.Body
-
-	p, t, err := m3u8.DecodeFrom(f, true)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if t != m3u8.MASTER {
-		log.Fatalf("not support file type [%s]", t)
-	}
-
-	return p.(*m3u8.MasterPlaylist).Variants[0].URI
-}
-
-func getRadikoData(jsonURL string) radikoData {
-	res, err := http.Get(jsonURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer res.Body.Close()
-	byteArr, _ := ioutil.ReadAll(res.Body)
-
-	var jsonData root
-	err = json.Unmarshal(byteArr, &jsonData)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return jsonData.Main
-}
-
-type root struct {
-	Main radikoData
-}
-
-type radikoData struct {
-	SiteID      string       `json:"site_id"`
-	ProgramName string       `json:"program_name"`
-	DetailList  []detailList `json:"detail_list"`
-}
-
-type detailList struct {
-	FileList []fileList `json:"file_list"`
-}
-
-type fileList struct {
-	Seq       int    `json:"seq"`
-	FileID    string `json:"file_id"`
-	FileTitle string `json:"file_title"`
-	FileName  string `json:"file_name"`
 }

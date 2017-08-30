@@ -1,8 +1,8 @@
 package main
 
 import (
-	"os/exec"
 	"fmt"
+	"os/exec"
 )
 
 type ffmpeg struct {
@@ -28,4 +28,3 @@ func (f *ffmpeg) execute(output string) ([]byte, error) {
 	fmt.Println(f.Args)
 	return f.CombinedOutput()
 }
-
