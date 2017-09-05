@@ -12,7 +12,11 @@ func getRadikoData(jsonURL string) radikoData {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer res.Body.Close()
+	defer func() {
+		if err != nil {
+			err = res.Body.Close()
+		}
+	}()
 	byteArr, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		log.Fatal(err)

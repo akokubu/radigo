@@ -12,7 +12,11 @@ func isDone(filename, title string) bool {
 	if err != nil {
 		return false
 	}
-	defer fp.Close()
+	defer func() {
+		if err != nil {
+			err = fp.Close()
+		}
+	}()
 
 	scanner := bufio.NewScanner(fp)
 
@@ -30,9 +34,19 @@ func saveDone(filename, title string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer fp.Close()
+	defer func() {
+		if err != nil {
+			err = fp.Close()
+		}
+	}()
 
 	writer := bufio.NewWriter(fp)
-	writer.WriteString(title + "\n")
-	writer.Flush()
+	_, err = writer.WriteString(title + "\n")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = writer.Flush()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

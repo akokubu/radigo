@@ -44,10 +44,7 @@ func convertM3u8ToMp3(masterM3u8Path, title string) error {
 
 	result, err = f.execute(name)
 	log.Println(string(result))
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func getM3u8MasterPlaylist(m3u8FilePath string) string {
@@ -63,7 +60,7 @@ func getM3u8MasterPlaylist(m3u8FilePath string) string {
 	}
 
 	if t != m3u8.MASTER {
-		log.Fatalf("not support file type [%s]", t)
+		log.Fatalf("not support file type [%v]", t)
 	}
 
 	return p.(*m3u8.MasterPlaylist).Variants[0].URI

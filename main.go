@@ -11,31 +11,33 @@ import (
 	"golang.org/x/exp/utf8string"
 )
 
+type radikoIndex struct {
+	jsonURL string
+}
+
+func makeSaveDir(programName string) {
+	_, err := os.Stat(programName)
+	if err != nil {
+		if err := os.Mkdir(programName, 0777); err != nil {
+			log.Fatal(err)
+		}
+	}
+}
+
 func main() {
 	var indexPath string
 	flag.StringVar(&indexPath, "i", "index.txt", "json list file")
 	flag.Parse()
 
-	fp, err := os.Open(indexPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fp.Close()
-
-	scanner := bufio.NewScanner(fp)
-
-	for scanner.Scan() {
-		jsonURL := scanner.Text()
+	radikoIndexes := getRadikoIndexes(indexPath)
+	for _, radikoIndex := range radikoIndexes {
+		jsonURL := radikoIndex.jsonURL
 		fmt.Println(jsonURL)
 
 		radikoData := getRadikoData(jsonURL)
 		doneFilename := fmt.Sprintf("%s.txt", radikoData.ProgramName)
-		_, err := os.Stat(radikoData.ProgramName)
-		if err != nil {
-			if err := os.Mkdir(radikoData.ProgramName, 0777); err != nil {
-				log.Fatal(err)
-			}
-		}
+
+		makeSaveDir(radikoData.ProgramName)
 
 		for _, radikoDetail := range radikoData.DetailList {
 			for i, f := range radikoDetail.FileList {
@@ -71,4 +73,24 @@ func main() {
 			}
 		}
 	}
+}
+
+func getRadikoIndexes(indexPath string) []radikoIndex {
+	fp, err := os.Open(indexPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		if err != nil {
+			err = fp.Close()
+		}
+	}()
+
+	scanner := bufio.NewScanner(fp)
+	var indexes []radikoIndex
+	for scanner.Scan() {
+		jsonURL := scanner.Text()
+		indexes = append(indexes, radikoIndex{jsonURL: jsonURL})
+	}
+	return indexes
 }
