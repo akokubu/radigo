@@ -6,10 +6,7 @@ jobs:
       - image: circleci/golang:1.8
     steps:
       - checkout
-      - run: echo "hello world"
-      - run: echo $GOPATH
-      - run: echo $GOROOT
+      - run: go get ./...
       - run: go get -u github.com/alecthomas/gometalinter
-      - run: GOPATH=`pwd`
       - run: gometalinter --install
       - run: gometalinter --deadline 30s ./...
