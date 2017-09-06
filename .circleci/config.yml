@@ -10,5 +10,6 @@ jobs:
       - run: echo $GOPATH
       - run: echo $GOROOT
       - run: go get -u github.com/alecthomas/gometalinter
+      - run: GOPATH=`pwd`
       - run: gometalinter --install
       - run: gometalinter --deadline 30s ./...
