@@ -1,6 +1,7 @@
 version: 2
 jobs:
   build:
+    working_directory: /go/src/github.com/akokubu/radigo
     docker:
       - image: circleci/golang:1.8
     steps:
