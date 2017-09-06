@@ -2,73 +2,26 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"regexp"
-	"os/exec"
 
-	"github.com/grafov/m3u8"
 	"golang.org/x/exp/utf8string"
 )
 
-type ffmpeg struct {
-	*exec.Cmd
+type radikoIndex struct {
+	jsonURL string
 }
 
-func newFFMPEG(inputFilePath string) (*ffmpeg, error) {
-	cmdPath, err := exec.LookPath("ffmpeg")
+func makeSaveDir(programName string) {
+	_, err := os.Stat(programName)
 	if err != nil {
-		return nil, err
-	}
-
-	return &ffmpeg{exec.Command(cmdPath, "-i", inputFilePath)}, nil
-}
-
-func (f *ffmpeg) setArgs(args ...string) {
-	f.Args = append(f.Args, args...)
-}
-
-func (f *ffmpeg) execute(output string) ([]byte, error) {
-	fmt.Println("ffmpeg")
-	f.Args = append(f.Args, output)
-	fmt.Println(f.Args)
-	return f.CombinedOutput()
-}
-
-func isDone(filename, title string) bool {
-	// ファイルオープン
-	fp, err := os.Open(filename)
-	if err != nil {
-		return false
-	}
-	defer fp.Close()
-
-	scanner := bufio.NewScanner(fp)
-
-	for scanner.Scan() {
-		if scanner.Text() == title {
-			return true
+		if err := os.Mkdir(programName, 0777); err != nil {
+			log.Fatal(err)
 		}
 	}
-	return false
-}
-
-func saveDone(filename, title string) {
-	// ファイルオープン
-	fp, err := os.OpenFile(filename, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fp.Close()
-
-	writer := bufio.NewWriter(fp)
-	writer.WriteString(title + "\n")
-	writer.Flush()
 }
 
 func main() {
@@ -76,26 +29,15 @@ func main() {
 	flag.StringVar(&indexPath, "i", "index.txt", "json list file")
 	flag.Parse()
 
-	fp, err := os.Open(indexPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fp.Close()
-
-	scanner := bufio.NewScanner(fp)
-
-	for scanner.Scan() {
-		jsonURL := scanner.Text()
+	radikoIndexes := getRadikoIndexes(indexPath)
+	for _, radikoIndex := range radikoIndexes {
+		jsonURL := radikoIndex.jsonURL
 		fmt.Println(jsonURL)
 
 		radikoData := getRadikoData(jsonURL)
 		doneFilename := fmt.Sprintf("%s.txt", radikoData.ProgramName)
-		_, err := os.Stat(radikoData.ProgramName)
-		if err != nil {
-			if err := os.Mkdir(radikoData.ProgramName, 0777); err != nil {
-				log.Fatal(err)
-			}
-		}
+
+		makeSaveDir(radikoData.ProgramName)
 
 		for _, radikoDetail := range radikoData.DetailList {
 			for i, f := range radikoDetail.FileList {
@@ -133,100 +75,22 @@ func main() {
 	}
 }
 
-func convertM3u8ToMp3(masterM3u8Path, title string) error {
-	f, err := newFFMPEG(masterM3u8Path)
-	if err != nil {
-		return err
-	}
-
-	f.setArgs(
-		"-protocol_whitelist", "file,crypto,http,https,tcp,tls",
-		"-movflags", "faststart",
-		"-c", "copy",
-		"-y",
-		"-bsf:a", "aac_adtstoasc",
-	)
-
-	result, err := f.execute("output.mp4")
-	log.Println(string(result))
-	if err != nil {
-		return err
-	}
-
-	f, err = newFFMPEG("output.mp4")
-	if err != nil {
-		return err
-	}
-
-	f.setArgs(
-		"-y",
-		"-acodec", "libmp3lame",
-		"-ab", "256k",
-	)
-
-	var name = title + ".mp3"
-	fmt.Println(name)
-
-	result, err = f.execute(name)
-	log.Println(string(result))
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func getM3u8MasterPlaylist(m3u8FilePath string) string {
-	resp, err := http.Get(m3u8FilePath)
+func getRadikoIndexes(indexPath string) []radikoIndex {
+	fp, err := os.Open(indexPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	f := resp.Body
+	defer func() {
+		if err != nil {
+			err = fp.Close()
+		}
+	}()
 
-	p, t, err := m3u8.DecodeFrom(f, true)
-	if err != nil {
-		log.Fatal(err)
+	scanner := bufio.NewScanner(fp)
+	var indexes []radikoIndex
+	for scanner.Scan() {
+		jsonURL := scanner.Text()
+		indexes = append(indexes, radikoIndex{jsonURL: jsonURL})
 	}
-
-	if t != m3u8.MASTER {
-		log.Fatalf("not support file type [%v]", t)
-	}
-
-	return p.(*m3u8.MasterPlaylist).Variants[0].URI
-}
-
-func getRadikoData(jsonURL string) radikoData {
-	res, err := http.Get(jsonURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer res.Body.Close()
-	byteArr, _ := ioutil.ReadAll(res.Body)
-
-	var jsonData root
-	err = json.Unmarshal(byteArr, &jsonData)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return jsonData.Main
-}
-
-type root struct {
-	Main radikoData
-}
-
-type radikoData struct {
-	SiteID      string       `json:"site_id"`
-	ProgramName string       `json:"program_name"`
-	DetailList  []detailList `json:"detail_list"`
-}
-
-type detailList struct {
-	FileList []fileList `json:"file_list"`
-}
-
-type fileList struct {
-	Seq       int    `json:"seq"`
-	FileID    string `json:"file_id"`
-	FileTitle string `json:"file_title"`
-	FileName  string `json:"file_name"`
+	return indexes
 }
