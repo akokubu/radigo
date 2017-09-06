@@ -7,6 +7,8 @@ jobs:
     steps:
       - checkout
       - run: echo "hello world"
+      - run: echo $GOPATH
+      - run: echo $GOROOT
       - run: go get -u github.com/alecthomas/gometalinter
       - run: gometalinter --install
       - run: gometalinter --deadline 30s ./...
