@@ -7,9 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"regexp"
-
-	"golang.org/x/exp/utf8string"
 )
 
 func makeSaveDir(programName string) {
@@ -28,46 +25,42 @@ func main() {
 
 	radikoIndexes := getRadikoIndexes(indexPath)
 	for _, radikoIndex := range radikoIndexes {
-		jsonURL := radikoIndex.IndexURL
-
-		radikoData := getRadikoData(jsonURL)
+		radikoData := getRadikoData(radikoIndex)
 		doneFilename := fmt.Sprintf("%s.txt", radikoIndex.ProgramName)
 
 		makeSaveDir(radikoIndex.ProgramName)
+		fmt.Println(radikoIndex.ProgramName)
 
-		for _, radikoDetail := range radikoData.DetailList {
-			for i, f := range radikoDetail.FileList {
-				title := utf8string.NewString(f.FileTitle)
-				fileName := title.Slice(1, title.RuneCount()-1)
+		for i, fileInfo := range radikoData.fileInfoList {
+			title := fileInfo.title
 
-				re := regexp.MustCompile(`(\(\d\))$`)
-				titleName := re.ReplaceAllString(fileName, "")
-				saveDir := radikoIndex.ProgramName + "/" + titleName
-				if i == 0 {
-					_, err := os.Stat(saveDir)
-					if err != nil {
-						if err := os.Mkdir(saveDir, 0777); err != nil {
-							log.Fatal(err)
-						}
+			fmt.Print(fileInfo.title)
+			saveDir := radikoIndex.ProgramName + "/" + radikoData.programName
+
+			if i == 0 {
+				_, err := os.Stat(saveDir)
+				if err != nil {
+					if err := os.Mkdir(saveDir, 0777); err != nil {
+						log.Fatal(err)
 					}
 				}
-
-				fmt.Print(fileName + " ")
-				if isDone(doneFilename, fileName) {
-					fmt.Println("already downloaded")
-					continue
-				}
-
-				m3u8FilePath := f.FileName
-				masterM3u8Path := getM3u8MasterPlaylist(m3u8FilePath)
-				err := convertM3u8ToMp3(masterM3u8Path, saveDir+"/"+fileName)
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				saveDone(doneFilename, fileName)
-				fmt.Println("done")
 			}
+
+			if isDone(doneFilename, title) {
+				fmt.Println(" already downloaded")
+				continue
+			}
+
+			// MP3保存
+			m3u8FilePath := fileInfo.fileName
+			masterM3u8Path := getM3u8MasterPlaylist(m3u8FilePath)
+			err := convertM3u8ToMp3(masterM3u8Path, saveDir+"/"+fileInfo.title)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			saveDone(doneFilename, title)
+			fmt.Println("done")
 		}
 	}
 }
