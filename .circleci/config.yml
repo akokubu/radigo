@@ -1,0 +1,12 @@
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/github.com/akokubu/radigo
+    docker:
+      - image: circleci/golang:1.8
+    steps:
+      - checkout
+      - run: go get ./...
+      - run: go get -u github.com/alecthomas/gometalinter
+      - run: gometalinter --install
+      - run: gometalinter --deadline 30s ./...

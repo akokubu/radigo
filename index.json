@@ -1,0 +1,20 @@
+{
+  "programs": [
+    {
+      "program_name": "FMシアター",
+      "url": "https://www.nhk.or.jp/radioondemand/json/0058/bangumi_0058_01.json"
+    },
+    {
+      "program_name": "新日曜名作座",
+      "url": "https://www.nhk.or.jp/radioondemand/json/0930/bangumi_0930_01.json"
+    },
+    {
+      "program_name": "青春アドベンチャー",
+      "url": "https://www.nhk.or.jp/radioondemand/json/0164/bangumi_0164_01.json"
+    },
+    {
+      "program_name": "特集オーディオドラマ",
+      "url": "https://www.nhk.or.jp/radioondemand/json/P000025/bangumi_P000025_01.json"
+    }
+  ]
+}
