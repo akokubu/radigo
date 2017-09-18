@@ -20,7 +20,7 @@ func makeSaveDir(programName string) {
 
 func main() {
 	var indexPath string
-	flag.StringVar(&indexPath, "i", "index.txt", "json list file")
+	flag.StringVar(&indexPath, "i", "index.json", "json list file")
 	flag.Parse()
 
 	radikoIndexes := getRadikoIndexes(indexPath)
@@ -29,38 +29,29 @@ func main() {
 		doneFilename := fmt.Sprintf("%s.txt", radikoIndex.ProgramName)
 
 		makeSaveDir(radikoIndex.ProgramName)
-		fmt.Println(radikoIndex.ProgramName)
+        fmt.Println("■" + radikoIndex.ProgramName)
 
-		for i, fileInfo := range radikoData.fileInfoList {
-			title := fileInfo.title
+		for _, fileInfo := range radikoData.fileInfoList {
+			fmt.Print(fileInfo.fileTitle)
 
-			fmt.Print(fileInfo.title)
-			saveDir := radikoIndex.ProgramName + "/" + radikoData.programName
-
-			if i == 0 {
-				_, err := os.Stat(saveDir)
-				if err != nil {
-					if err := os.Mkdir(saveDir, 0777); err != nil {
-						log.Fatal(err)
-					}
-				}
-			}
-
-			if isDone(doneFilename, title) {
+			if isDone(doneFilename, fileInfo.fileTitle) {
 				fmt.Println(" already downloaded")
 				continue
 			}
 
+			saveDir := radikoIndex.ProgramName + "/" + fileInfo.title
+            makeSaveDir(saveDir)
+
 			// MP3保存
 			m3u8FilePath := fileInfo.fileName
 			masterM3u8Path := getM3u8MasterPlaylist(m3u8FilePath)
-			err := convertM3u8ToMp3(masterM3u8Path, saveDir+"/"+fileInfo.title)
+			err := convertM3u8ToMp3(masterM3u8Path, saveDir+"/"+fileInfo.fileTitle)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			saveDone(doneFilename, title)
-			fmt.Println("done")
+			saveDone(doneFilename, fileInfo.fileTitle)
+			fmt.Println(" done")
 		}
 	}
 }
