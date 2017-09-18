@@ -1,19 +1,13 @@
 package main
 
 import (
-	"bufio"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
-	"regexp"
-
-	"golang.org/x/exp/utf8string"
 )
-
-type radikoIndex struct {
-	jsonURL string
-}
 
 func makeSaveDir(programName string) {
 	_, err := os.Stat(programName)
@@ -31,66 +25,66 @@ func main() {
 
 	radikoIndexes := getRadikoIndexes(indexPath)
 	for _, radikoIndex := range radikoIndexes {
-		jsonURL := radikoIndex.jsonURL
-		fmt.Println(jsonURL)
+		radikoData := getRadikoData(radikoIndex)
+		doneFilename := fmt.Sprintf("%s.txt", radikoIndex.ProgramName)
 
-		radikoData := getRadikoData(jsonURL)
-		doneFilename := fmt.Sprintf("%s.txt", radikoData.ProgramName)
+		makeSaveDir(radikoIndex.ProgramName)
+		fmt.Println(radikoIndex.ProgramName)
 
-		makeSaveDir(radikoData.ProgramName)
+		for i, fileInfo := range radikoData.fileInfoList {
+			title := fileInfo.title
 
-		for _, radikoDetail := range radikoData.DetailList {
-			for i, f := range radikoDetail.FileList {
-				title := utf8string.NewString(f.FileTitle)
-				fileName := title.Slice(1, title.RuneCount()-1)
+			fmt.Print(fileInfo.title)
+			saveDir := radikoIndex.ProgramName + "/" + radikoData.programName
 
-				re := regexp.MustCompile(`(\(\d\))$`)
-				titleName := re.ReplaceAllString(fileName, "")
-				saveDir := radikoData.ProgramName + "/" + titleName
-				if i == 0 {
-					_, err := os.Stat(saveDir)
-					if err != nil {
-						if err := os.Mkdir(saveDir, 0777); err != nil {
-							log.Fatal(err)
-						}
+			if i == 0 {
+				_, err := os.Stat(saveDir)
+				if err != nil {
+					if err := os.Mkdir(saveDir, 0777); err != nil {
+						log.Fatal(err)
 					}
 				}
-
-				fmt.Print(fileName + " ")
-				if isDone(doneFilename, fileName) {
-					fmt.Println("already downloaded")
-					continue
-				}
-				m3u8FilePath := f.FileName
-				masterM3u8Path := getM3u8MasterPlaylist(m3u8FilePath)
-
-				err := convertM3u8ToMp3(masterM3u8Path, saveDir+"/"+fileName)
-				if err != nil {
-					log.Fatal(err)
-				}
-				saveDone(doneFilename, fileName)
-				fmt.Println("done")
 			}
+
+			if isDone(doneFilename, title) {
+				fmt.Println(" already downloaded")
+				continue
+			}
+
+			// MP3保存
+			m3u8FilePath := fileInfo.fileName
+			masterM3u8Path := getM3u8MasterPlaylist(m3u8FilePath)
+			err := convertM3u8ToMp3(masterM3u8Path, saveDir+"/"+fileInfo.title)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			saveDone(doneFilename, title)
+			fmt.Println("done")
 		}
 	}
 }
 
+type radikoIndexArray struct {
+	Programs []radikoIndex `json:"programs"`
+}
+
+type radikoIndex struct {
+	ProgramName string `json:"program_name"`
+	IndexURL    string `json:"url"`
+}
+
 func getRadikoIndexes(indexPath string) []radikoIndex {
-	fp, err := os.Open(indexPath)
+	raw, err := ioutil.ReadFile(indexPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func() {
-		if err != nil {
-			err = fp.Close()
-		}
-	}()
 
-	scanner := bufio.NewScanner(fp)
-	var indexes []radikoIndex
-	for scanner.Scan() {
-		jsonURL := scanner.Text()
-		indexes = append(indexes, radikoIndex{jsonURL: jsonURL})
+	var ri radikoIndexArray
+	err = json.Unmarshal(raw, &ri)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return indexes
+
+	return ri.Programs
 }
