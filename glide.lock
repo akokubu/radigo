@@ -1,0 +1,11 @@
+hash: 104ccb9ad5f4850fb60aeb1b7b32d2d585d6c366f95df8205716081eaf28559c
+updated: 2017-09-21T09:33:03.722556979+09:00
+imports:
+- name: github.com/grafov/m3u8
+  version: 0b86a8a8eaf300b6dfaf5a7a32b6e0b86f094621
+- name: golang.org/x/exp
+  version: 50c28f97489115b511c3104aafe83f148deb39a9
+  subpackages:
+  - utf8string
+  - utf8strinq
+testImports: []

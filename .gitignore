@@ -14,6 +14,7 @@
 
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
+vendor/
 
 新日曜名作座
 新日曜名作座.txt
