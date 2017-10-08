@@ -15,15 +15,15 @@ jobs:
       - run: go get -u github.com/alecthomas/gometalinter
       - run: go get -u golang.org/x/tools/cmd/cover 
       - run: go get -u github.com/mattn/goveralls
+      - run: go get -u github.com/jstemmer/go-junit-report
       - run: gometalinter --install
       - run: gometalinter --deadline 30s ./...
       - run: mkdir -p $TEST_RESULTS #コマンドの実行(省略版)
-      - run: go get github.com/jstemmer/go-junit-report
       - run:
           name: Run unit tests
           command: |
             trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
-            make test | tee ${TEST_RESULTS}/go-test.out
+            go test -v -covermode=count -coverprofile=coverage.out | tee ${TEST_RESULTS}/go-test.out
       - run: goveralls -coverprofile=coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN
       - store_test_results: #テスト結果の格納
           path: /tmp/test-results
