@@ -8,7 +8,7 @@ Overview
 Go勉強用に作ってみた。
 
 # Usage
-index.txt ファイル作成
+findex.txt ファイル作成
 
 ```
 {
@@ -59,6 +59,9 @@ program_name/file_title/file_title_nn のようにディレクトリ作ってMP3
 go get github.com/akokubu/radigo
 ```
 
+[![Coverage Status](https://coveralls.io/repos/github/akokubu/radigo/badge.svg?branch=feature%2Fceveralls)](https://coveralls.io/github/akokubu/radigo?branch=feature%2Fceveralls)
+[![CircleCI](https://circleci.com/gh/akokubu/radigo/tree/develop.svg?style=svg)](https://circleci.com/gh/akokubu/radigo/tree/develop)
+
 2017/08/15
 とりあえずコピペで動かすところまで実装。
 
@@ -78,7 +81,7 @@ go get github.com/akokubu/radigo
 - [ ] indexの内容表示サブコマンド
 - [ ] ダウンロード済み履歴管理
 - [x] CI -> circleCIcで動かす様に。metalinter実行
-- [ ] テストカバレッジ
+- [x] テストカバレッジ
 - [ ] ダウンロード進捗表示
 - [ ] MP3変換進捗
 
