@@ -29,13 +29,13 @@ func getFileInfo(main radikoData, programName string, detail detailList, file fi
 
 	switch programName {
 	case "青春アドベンチャー":
-        title = detail.Headline
-        fileTitle = title + "_" + getCount(file.FileTitle)
+		title = detail.Headline
+		fileTitle = title + "_" + getCount(file.FileTitle)
 
 	case "FMシアター":
 		ft := utf8string.NewString(file.FileTitle)
 		title = ft.Slice(1, ft.RuneCount()-1)
-        fileTitle = title
+		fileTitle = title
 
 	case "新日曜名作座":
 		ft := utf8string.NewString(file.FileTitle)
@@ -45,20 +45,20 @@ func getFileInfo(main radikoData, programName string, detail detailList, file fi
 		countStr := re.FindString(title)
 
 		title = strings.Replace(title, countStr, "", 1)
-        fileTitle = title + "_" + getCount(countStr)
+		fileTitle = title + "_" + getCount(countStr)
 
 	case "特集オーディオドラマ":
 		ft := utf8string.NewString(strings.Replace(main.ProgramName, programName, "", 1))
 		title = ft.Slice(1, ft.RuneCount()-1)
-        fileTitle = title
+		fileTitle = title
 
 	default:
 		log.Fatal(programName + " is not support")
 	}
 	return fileInfo{
-		title:    title,
-        fileTitle: fileTitle,
-		fileName: file.FileName,
+		title:     title,
+		fileTitle: fileTitle,
+		fileName:  file.FileName,
 	}
 }
 
@@ -107,9 +107,9 @@ type programInfo struct {
 }
 
 type fileInfo struct {
-	title    string
-	fileTitle    string
-	fileName string
+	title     string
+	fileTitle string
+	fileName  string
 }
 
 type root struct {

@@ -29,7 +29,7 @@ func main() {
 		doneFilename := fmt.Sprintf("%s.txt", radikoIndex.ProgramName)
 
 		makeSaveDir(radikoIndex.ProgramName)
-        fmt.Println("■" + radikoIndex.ProgramName)
+		fmt.Println("■" + radikoIndex.ProgramName)
 
 		for _, fileInfo := range radikoData.fileInfoList {
 			fmt.Print(fileInfo.fileTitle)
@@ -40,7 +40,7 @@ func main() {
 			}
 
 			saveDir := radikoIndex.ProgramName + "/" + fileInfo.title
-            makeSaveDir(saveDir)
+			makeSaveDir(saveDir)
 
 			// MP3保存
 			m3u8FilePath := fileInfo.fileName

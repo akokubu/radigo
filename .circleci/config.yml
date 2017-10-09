@@ -2,11 +2,28 @@ version: 2
 jobs:
   build:
     working_directory: /go/src/github.com/akokubu/radigo
+
+    environment:
+      TEST_RESULTS: /tmp/test-results
+
     docker:
       - image: circleci/golang:1.8
+
     steps:
       - checkout
       - run: go get ./...
       - run: go get -u github.com/alecthomas/gometalinter
+      - run: go get -u golang.org/x/tools/cmd/cover 
+      - run: go get -u github.com/mattn/goveralls
+      - run: go get -u github.com/jstemmer/go-junit-report
       - run: gometalinter --install
       - run: gometalinter --deadline 30s ./...
+      - run: mkdir -p $TEST_RESULTS #コマンドの実行(省略版)
+      - run:
+          name: Run unit tests
+          command: |
+            trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
+            go test -v -covermode=count -coverprofile=coverage.out | tee ${TEST_RESULTS}/go-test.out
+      - run: goveralls -coverprofile=coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN
+      - store_test_results: #テスト結果の格納
+          path: /tmp/test-results
