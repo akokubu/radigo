@@ -85,6 +85,29 @@ func TestGetFileInfo_sunday(t *testing.T) {
 
 func TestGetFileInfo_special(t *testing.T) {
 	main := radikoData{
+		ProgramName: "特集オーディオドラマ",
+	}
+	programName := "特集オーディオドラマ"
+	file := fileList{
+		FileName:  "https://nhks-vh.akamaihd.net/i/radioondemand/r/P000025/s/stream_P000025_2b1c9dcfca3f50abe499af115c559b3f.mp4/master.m3u://nhks-vh.akamaihd.net/i/radioondemand/r/P000025/s/stream_P000025_2b1c9dcfca3f50abe499af115c559b3f.mp4/master.m3u8",
+		FileTitle: "「アシマの銃、セギルの草笛」",
+	}
+	detail := detailList{
+		Headline: "",
+	}
+	got := getFileInfo(main, programName, detail, file)
+	want := fileInfo{
+		title:     "アシマの銃、セギルの草笛",
+		fileTitle: "アシマの銃、セギルの草笛",
+		fileName:  "https://nhks-vh.akamaihd.net/i/radioondemand/r/P000025/s/stream_P000025_2b1c9dcfca3f50abe499af115c559b3f.mp4/master.m3u://nhks-vh.akamaihd.net/i/radioondemand/r/P000025/s/stream_P000025_2b1c9dcfca3f50abe499af115c559b3f.mp4/master.m3u8",
+	}
+	if got != want {
+		t.Errorf("getFileInfo() == %q, want %q", got, want)
+	}
+}
+
+func TestGetFileInfo_special_old(t *testing.T) {
+	main := radikoData{
 		ProgramName: "特集オーディオドラマ「ピンザの島」",
 	}
 	programName := "特集オーディオドラマ"
@@ -97,8 +120,8 @@ func TestGetFileInfo_special(t *testing.T) {
 	}
 	got := getFileInfo(main, programName, detail, file)
 	want := fileInfo{
-		title:     "ピンザの島",
-		fileTitle: "ピンザの島",
+		title:     "017年8月13日(日",
+		fileTitle: "017年8月13日(日",
 		fileName:  "https://nhks-vh.akamaihd.net/i/radioondemand/r/P000025/s/stream_P000025_2b1c9dcfca3f50abe499af115c559b3f.mp4/master.m3u://nhks-vh.akamaihd.net/i/radioondemand/r/P000025/s/stream_P000025_2b1c9dcfca3f50abe499af115c559b3f.mp4/master.m3u8",
 	}
 	if got != want {
