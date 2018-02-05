@@ -48,7 +48,7 @@ func getFileInfo(main radikoData, programName string, detail detailList, file fi
 		fileTitle = title + "_" + getCount(countStr)
 
 	case "特集オーディオドラマ":
-		ft := utf8string.NewString(strings.Replace(main.ProgramName, programName, "", 1))
+		ft := utf8string.NewString(file.FileTitle)
 		title = ft.Slice(1, ft.RuneCount()-1)
 		fileTitle = title
 
