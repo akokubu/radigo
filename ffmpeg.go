@@ -10,7 +10,7 @@ type ffmpeg struct {
 }
 
 func newFFMPEG(inputFilePath string) (*ffmpeg, error) {
-	cmdPath, err := exec.LookPath("ffmpeg")
+	cmdPath, err := exec.LookPath("/usr/local/bin/ffmpeg")
 	if err != nil {
 		return nil, err
 	}
