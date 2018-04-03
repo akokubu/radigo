@@ -12,7 +12,7 @@ import (
 func makeSaveDir(programName string) {
 	_, err := os.Stat(programName)
 	if err != nil {
-		if err := os.Mkdir(programName, 0777); err != nil {
+		if err := os.Mkdir(programName, 0700); err != nil {
 			log.Fatal(err)
 		}
 	}
