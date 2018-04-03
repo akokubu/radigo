@@ -34,7 +34,8 @@ func getFileInfo(main radikoData, programName string, detail detailList, file fi
 		if title == "" {
 			titleRegexp := regexp.MustCompile("「(.*)」(.*)")
 			group := titleRegexp.FindSubmatch([]byte(file.FileTitle))
-			fileTitle = string(group[1]) + "_" + getCount(string(group[2]))
+			title = string(group[1])
+			fileTitle = title + "_" + getCount(string(group[2]))
 			fmt.Println(fileTitle)
 		} else {
 			fileTitle = title + "_" + getCount(file.FileTitle)
