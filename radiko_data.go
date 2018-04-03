@@ -30,7 +30,15 @@ func getFileInfo(main radikoData, programName string, detail detailList, file fi
 	switch programName {
 	case "青春アドベンチャー":
 		title = detail.Headline
-		fileTitle = title + "_" + getCount(file.FileTitle)
+		fmt.Println(title)
+		if title == "" {
+			titleRegexp := regexp.MustCompile("「(.*)」(.*)")
+			group := titleRegexp.FindSubmatch([]byte(file.FileTitle))
+			fileTitle = string(group[1]) + "_" + getCount(string(group[2]))
+			fmt.Println(fileTitle)
+		} else {
+			fileTitle = title + "_" + getCount(file.FileTitle)
+		}
 
 	case "FMシアター":
 		ft := utf8string.NewString(file.FileTitle)

@@ -30,7 +30,7 @@ func isDone(filename, title string) bool {
 
 func saveDone(filename, title string) {
 	// ファイルオープン
-	fp, err := os.OpenFile(filename, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	fp, err := os.OpenFile(filename, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
 	if err != nil {
 		log.Fatal(err)
 	}
