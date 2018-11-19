@@ -8,7 +8,7 @@ import (
 
 func isDone(filename, title string) bool {
 	// ファイルオープン
-	fp, err := os.Open(filename)
+	fp, err := os.Open(filename) // nolint: gosec
 	if err != nil {
 		return false
 	}

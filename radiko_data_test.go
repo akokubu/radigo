@@ -40,6 +40,26 @@ func TestGetFileInfo_adventure(t *testing.T) {
 		t.Errorf("getFileInfo() == %q, want %q", got, want)
 	}
 }
+func TestGetFileInfo_adventure_last_episode(t *testing.T) {
+	main := radikoData{}
+	programName := "青春アドベンチャー"
+	file := fileList{
+		FileName:  "https://nhks-vh.akamaihd.net/i/radioondemand/r/0164/s/stream_0164_262127bf3a6dd84c60385fa0f4e89f3e.mp4/master.m3u8",
+		FileTitle: "第10回 (最終回)",
+	}
+	detail := detailList{
+		Headline: "風の向こうへ駆け抜けろ",
+	}
+	got := getFileInfo(main, programName, detail, file)
+	want := fileInfo{
+		title:     "風の向こうへ駆け抜けろ",
+		fileTitle: "風の向こうへ駆け抜けろ_10",
+		fileName:  "https://nhks-vh.akamaihd.net/i/radioondemand/r/0164/s/stream_0164_262127bf3a6dd84c60385fa0f4e89f3e.mp4/master.m3u8",
+	}
+	if got != want {
+		t.Errorf("getFileInfo() == %q, want %q", got, want)
+	}
+}
 
 func TestGetFileInfo_fmtheater(t *testing.T) {
 	main := radikoData{}
