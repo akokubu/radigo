@@ -15,6 +15,7 @@ func newFFMPEG(inputFilePath string) (*ffmpeg, error) {
 		return nil, err
 	}
 
+	/* #nosec */
 	return &ffmpeg{exec.Command(cmdPath, "-i", inputFilePath)}, nil
 }
 

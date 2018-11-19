@@ -14,6 +14,8 @@ import (
 )
 
 func getCount(fileTitle string) string {
+	fileTitle = strings.Replace(fileTitle, "(最終回)", "", 1)
+	fileTitle = strings.TrimSpace(fileTitle)
 	title := utf8string.NewString(fileTitle)
 	countStr := title.Slice(1, title.RuneCount()-1)
 	count, err := strconv.Atoi(countStr)
@@ -30,7 +32,16 @@ func getFileInfo(main radikoData, programName string, detail detailList, file fi
 	switch programName {
 	case "青春アドベンチャー":
 		title = detail.Headline
-		fileTitle = title + "_" + getCount(file.FileTitle)
+		fmt.Println(title)
+		if title == "" {
+			titleRegexp := regexp.MustCompile("「(.*)」(.*)")
+			group := titleRegexp.FindSubmatch([]byte(file.FileTitle))
+			title = string(group[1])
+			fileTitle = title + "_" + getCount(string(group[2]))
+			fmt.Println(fileTitle)
+		} else {
+			fileTitle = title + "_" + getCount(file.FileTitle)
+		}
 
 	case "FMシアター":
 		ft := utf8string.NewString(file.FileTitle)
@@ -64,7 +75,7 @@ func getFileInfo(main radikoData, programName string, detail detailList, file fi
 
 func getRadikoData(radikoIndex radikoIndex) programInfo {
 	jsonURL := radikoIndex.IndexURL
-	res, err := http.Get(jsonURL)
+	res, err := http.Get(jsonURL) // nolint: gosec
 	if err != nil {
 		log.Fatal(err)
 	}
