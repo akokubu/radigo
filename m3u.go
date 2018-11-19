@@ -48,7 +48,7 @@ func convertM3u8ToMp3(masterM3u8Path, title string) error {
 }
 
 func getM3u8MasterPlaylist(m3u8FilePath string) string {
-	resp, err := http.Get(m3u8FilePath)
+	resp, err := http.Get(m3u8FilePath) // nolint: gosec
 	if err != nil {
 		log.Fatal(err)
 	}

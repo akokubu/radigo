@@ -66,7 +66,7 @@ type radikoIndex struct {
 }
 
 func getRadikoIndexes(indexPath string) []radikoIndex {
-	raw, err := ioutil.ReadFile(indexPath)
+	raw, err := ioutil.ReadFile(indexPath) // nolint: gosec
 	if err != nil {
 		log.Fatal(err)
 	}

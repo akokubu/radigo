@@ -75,7 +75,7 @@ func getFileInfo(main radikoData, programName string, detail detailList, file fi
 
 func getRadikoData(radikoIndex radikoIndex) programInfo {
 	jsonURL := radikoIndex.IndexURL
-	res, err := http.Get(jsonURL)
+	res, err := http.Get(jsonURL) // nolint: gosec
 	if err != nil {
 		log.Fatal(err)
 	}

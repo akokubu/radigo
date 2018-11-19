@@ -4,15 +4,11 @@ import (
 	"bufio"
 	"log"
 	"os"
-	"path/filepath"
 )
 
 func isDone(filename, title string) bool {
-	basePath := "./"
 	// ファイルオープン
-	//filePath := filepath.Clean(filename)
-	filename = filepath.Join(basePath, filepath.Clean(filename))
-	fp, err := os.Open(filename)
+	fp, err := os.Open(filename) // nolint: gosec
 	if err != nil {
 		return false
 	}
