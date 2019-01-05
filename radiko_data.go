@@ -15,6 +15,7 @@ import (
 
 func getCount(fileTitle string) string {
 	fileTitle = strings.Replace(fileTitle, "(最終回)", "", 1)
+	fileTitle = strings.Replace(fileTitle, "（最終回）", "", 1)
 	fileTitle = strings.TrimSpace(fileTitle)
 	title := utf8string.NewString(fileTitle)
 	countStr := title.Slice(1, title.RuneCount()-1)
