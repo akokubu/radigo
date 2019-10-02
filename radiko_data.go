@@ -14,6 +14,9 @@ import (
 )
 
 func getCount(fileTitle string) string {
+	if (fileTitle == "") {
+	    return ""
+	}
 	fileTitle = strings.Replace(fileTitle, "(最終回)", "", 1)
 	fileTitle = strings.Replace(fileTitle, "（最終回）", "", 1)
 	fileTitle = strings.TrimSpace(fileTitle)
@@ -38,6 +41,7 @@ func getFileInfo(main radikoData, programName string, detail detailList, file fi
 			titleRegexp := regexp.MustCompile("「(.*)」(.*)")
 			group := titleRegexp.FindSubmatch([]byte(file.FileTitle))
 			title = string(group[1])
+			fmt.Println(title)
 			fileTitle = title + "_" + getCount(string(group[2]))
 			fmt.Println(fileTitle)
 		} else {
