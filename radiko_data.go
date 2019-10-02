@@ -24,7 +24,7 @@ func getCount(fileTitle string) string {
 	countStr := title.Slice(1, title.RuneCount()-1)
 	count, err := strconv.Atoi(countStr)
 	if err != nil {
-		log.Fatal(err)
+		return fileTitle
 	}
 	return fmt.Sprintf("%02d", count)
 }
